@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Modelo Cognitivo Pro</title>
+    <style>
+        :root { --primary: #4a90e2; --bg: #f5f7fa; --text: #333; --accent: #e74c3c; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; line-height: 1.5; }
+        .screen { display: none; }
+        .active { display: block; }
+        
+        /* Botões */
+        button { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; margin-bottom: 10px; cursor: pointer; font-weight: bold; }
+        .btn-secondary { background: #6c757d; }
+        .btn-danger { background: var(--accent); margin-top: 20px; }
+        
+        /* Formulário */
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; color: #555; }
+        input, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        
+        /* Cards de Histórico */
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 6px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s; }
+        .card:active { transform: scale(0.98); background: #f0f4f8; }
+        .card h4 { margin: 0 0 5px 0; color: var(--primary); }
+        .card p { font-size: 14px; margin: 0; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Detalhes */
+        .detail-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; }
+        .detail-item b { display: block; color: var(--primary); text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div id="home" class="screen active">
+        <h1 style="text-align: center;">Modelo Cognitivo</h1>
+        <p style="text-align: center; color: #666;">Ferramenta de Autoconhecimento</p>
+        <button onclick="showScreen('form')">Desenvolver Novo Modelo</button>
+        <button class="btn-secondary" onclick="showScreen('history'); loadHistory();">Ver Histórico</button>
+    </div>
+
+    <div id="form" class="screen">
+        <h2>Novo Registro</h2>
+        <label>Situação</label>
+        <textarea id="situacao" rows="3" placeholder="O que aconteceu?"></textarea>
+
+        <label>Pensamento Automático</label>
+        <textarea id="pensamento" rows="3" placeholder="O que passou pela sua cabeça?"></textarea>
+
+        <h3>Reações</h3>
+        <label>Física</label><input type="text" id="r_fisica" placeholder="Suor, aperto no peito...">
+        <label>Comportamental</label><input type="text" id="r_comportamental" placeholder="O que você fez?">
+        <label>Emocional</label><input type="text" id="r_emocional" placeholder="Medo, raiva, tristeza...">
+
+        <hr style="margin-top:20px; border: 0; border-top: 1px solid #ddd;">
+        
+        <label>Crença Nuclear</label>
+        <input type="text" id="crenca" placeholder="Ex: Eu sou incapaz">
+
+        <label>Pressupostos Adjacentes</label>
+        <input type="text" id="pressupostos" placeholder="Ex: Se eu errar, serei julgado">
+
+        <button style="margin-top: 20px;" onclick="saveModel()">Salvar Modelo</button>
+        <button class="btn-secondary" onclick="showScreen('home')">Cancelar</button>
+    </div>
+
+    <div id="history" class="screen">
+        <h2>Meus Modelos</h2>
+        <div id="list-container"></div>
+        <button class="btn-secondary" onclick="showScreen('home')">Voltar ao Início</button>
+    </div>
+
+    <div id="details" class="screen">
+        <h2>Detalhes do Modelo</h2>
+        <div id="full-content"></div>
+        <button class="btn-secondary" onclick="showScreen('history')">Voltar ao Histórico</button>
+        <button id="delete-btn" class="btn-danger">Excluir este registro</button>
+    </div>
+
+    <script>
+        let currentModels = [];
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function saveModel() {
+            const model = {
+                id: Date.now(),
+                situacao: document.getElementById('situacao').value,
+                pensamento: document.getElementById('pensamento').value,
+                r_fisica: document.getElementById('r_fisica').value,
+                r_comportamental: document.getElementById('r_comportamental').value,
+                r_emocional: document.getElementById('r_emocional').value,
+                crenca: document.getElementById('crenca').value,
+                pressupostos: document.getElementById('pressupostos').value,
+                date: new Date().toLocaleDateString('pt-BR')
+            };
+
+            let history = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
+            history.push(model);
+            localStorage.setItem('cognitive_models', JSON.stringify(history));
+            
+            alert('Modelo salvo com sucesso!');
+            showScreen('home');
+            document.querySelectorAll('input, textarea').forEach(i => i.value = '');
+        }
+
+        function loadHistory() {
+            const container = document.getElementById('list-container');
+            currentModels = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
+            
+            if (currentModels.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#999;">Nenhum registro ainda.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            // Renderiza do mais novo para o mais antigo
+            currentModels.slice().reverse().forEach((item, index) => {
+                const actualIndex = currentModels.length - 1 - index;
+                container.innerHTML += `
+                    <div class="card" onclick="viewDetails(${actualIndex})">
+                        <h4>${item.date}</h4>
+                        <p><strong>Situação:</strong> ${item.situacao || '(Vazio)'}</p>
+                        <p><strong>Pensamento:</strong> ${item.pensamento || '(Vazio)'}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function viewDetails(index) {
+            const item = currentModels[index];
+            const content = document.getElementById('full-content');
+            
+            content.innerHTML = `
+                <div class="detail-item"><b>Data</b>${item.date}</div>
+                <div class="detail-item"><b>Situação</b>${item.situacao}</div>
+                <div class="detail-item"><b>Pensamento Automático</b>${item.pensamento}</div>
+                <div class="detail-item"><b>Reação Física</b>${item.r_fisica}</div>
+                <div class="detail-item"><b>Reação Comportamental</b>${item.r_comportamental}</div>
+                <div class="detail-item"><b>Reação Emocional</b>${item.r_emocional}</div>
+                <div class="detail-item" style="border-left: 4px solid gold;"><b>Crença Nuclear</b>${item.crenca}</div>
+                <div class="detail-item" style="border-left: 4px solid gold;"><b>Pressupostos Adjacentes</b>${item.pressupostos}</div>
+            `;
+
+            document.getElementById('delete-btn').onclick = () => deleteModel(index);
+            showScreen('details');
+        }
+
+        function deleteModel(index) {
+            if (confirm("Deseja realmente excluir este registro?")) {
+                currentModels.splice(index, 1);
+                localStorage.setItem('cognitive_models', JSON.stringify(currentModels));
+                showScreen('history');
+                loadHistory();
+            }
+        }
+    </script>
+</body>
+</html>
