@@ -3,82 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Modelo Cognitivo Pro</title>
+    <title>Terapia Cognitiva Diário</title>
     <style>
-        :root { --primary: #4a90e2; --bg: #f5f7fa; --text: #333; --accent: #e74c3c; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; line-height: 1.5; }
-        .screen { display: none; }
+        :root { 
+            --primary: #4a90e2; 
+            --bg: #f5f7fa; 
+            --text: #333; 
+            --danger: #e74c3c; 
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --purple: #8e44ad;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 80px; }
+        .screen { display: none; animation: fadeIn 0.3s; }
         .active { display: block; }
         
-        /* Botões */
-        button { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; margin-bottom: 10px; cursor: pointer; font-weight: bold; }
-        .btn-secondary { background: #6c757d; }
-        .btn-danger { background: var(--accent); margin-top: 20px; }
-        
-        /* Formulário */
-        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; color: #555; }
-        input, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        
-        /* Cards de Histórico */
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 6px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s; }
-        .card:active { transform: scale(0.98); background: #f0f4f8; }
-        .card h4 { margin: 0 0 5px 0; color: var(--primary); }
-        .card p { font-size: 14px; margin: 0; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* Botões Principais */
+        .btn-main { background: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; margin-bottom: 12px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-emergency { background: var(--danger); }
+        .btn-success { background: var(--success); }
+        .btn-secondary { background: #95a5a6; }
+        .btn-cal { background: var(--purple); }
+        
+        /* Inputs e Cards */
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; color: #555; }
+        input[type="text"], input[type="datetime-local"], textarea, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit; background: white; }
+        
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card-model { border-left: 6px solid var(--primary); }
+        .card-emergency { border-left: 6px solid var(--danger); }
+        .card-reform { border-left: 6px solid var(--success); }
+        
         /* Detalhes */
         .detail-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee; }
-        .detail-item b { display: block; color: var(--primary); text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+        .detail-item b { display: block; color: var(--primary); text-transform: uppercase; font-size: 11px; margin-bottom: 4px; }
+        .detail-item-success b { color: var(--success); }
+
+        h1, h2, h3 { text-align: center; color: #2c3e50; margin-top: 0; }
+        
+        /* --- ESTILOS DO CALENDÁRIO --- */
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .day-name { text-align: center; font-weight: bold; font-size: 12px; color: #777; padding-bottom: 5px; }
+        .day-cell { height: 55px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #e0e0e0; transition: transform 0.1s; background-color: white; color: #333; }
+        .day-cell:active { transform: scale(0.95); }
+        .day-cell.today { border: 2px solid #333; font-weight: bold; }
+        .day-cell.empty { background: transparent; border: none; cursor: default; }
+
+        .legend-container { display: flex; gap: 8px; margin-top: 20px; font-size: 11px; color: #555; justify-content: center; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .color-box { width: 14px; height: 14px; border-radius: 4px; border: 1px solid #ddd; }
+
+        /* --- TAGS (CHIPS) DE SENTIMENTOS --- */
+        .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .chip { padding: 8px 14px; border: 1px solid #ccc; border-radius: 20px; font-size: 13px; background: white; color: #555; cursor: pointer; transition: 0.2s; user-select: none; }
+        .chip.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: bold; }
+
+        /* --- LISTA DE CHECKBOX PARA LINKAR MODELOS --- */
+        .link-list { max-height: 200px; overflow-y: auto; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-top: 5px; }
+        .link-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .link-item:last-child { border-bottom: none; }
+        .link-item input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; }
+        .link-item label { margin: 0; font-weight: normal; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <div id="home" class="screen active">
-        <h1 style="text-align: center;">Modelo Cognitivo</h1>
-        <p style="text-align: center; color: #666;">Ferramenta de Autoconhecimento</p>
-        <button onclick="showScreen('form')">Desenvolver Novo Modelo</button>
-        <button class="btn-secondary" onclick="showScreen('history'); loadHistory();">Ver Histórico</button>
+        <h1>Meu Espaço</h1>
+        
+        <button class="btn-main" onclick="openModelForm()">📝 Novo Registro Cognitivo</button>
+        <button class="btn-main btn-success" onclick="showScreen('reformulations'); loadReformulations();">🌱 Reformulações Funcionais</button>
+        <button class="btn-main btn-cal" onclick="showScreen('calendar-screen'); renderCalendar();">📅 Calendário & Diário</button>
+        <button class="btn-main btn-secondary" onclick="showScreen('history'); loadHistory();">📂 Ver Histórico</button>
+        
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+        <button class="btn-main btn-emergency" onclick="showScreen('emergency'); loadEmergencyPlan();">🚨 PLANO DE EMERGÊNCIA</button>
+    </div>
+
+    <div id="calendar-screen" class="screen">
+        <div class="calendar-header">
+            <button class="btn-small btn-secondary" style="width:auto; padding:8px 15px; border-radius:6px; border:none; background:#eee; color:#333;" onclick="changeMonth(-1)">❮</button>
+            <h3 id="month-year-label" style="margin:0; font-size:16px;">Mês Ano</h3>
+            <button class="btn-small btn-secondary" style="width:auto; padding:8px 15px; border-radius:6px; border:none; background:#eee; color:#333;" onclick="changeMonth(1)">❯</button>
+        </div>
+        
+        <div class="calendar-grid" id="calendar-grid"></div>
+
+        <div class="legend-container">
+            <div class="legend-item"><div class="color-box" style="background:#ef9a9a;"></div> M. Mal</div>
+            <div class="legend-item"><div class="color-box" style="background:#ffcc80;"></div> Mal</div>
+            <div class="legend-item"><div class="color-box" style="background:#fff59d;"></div> Neutro</div>
+            <div class="legend-item"><div class="color-box" style="background:#c8e6c9;"></div> Bem</div>
+            <div class="legend-item"><div class="color-box" style="background:#81c784;"></div> M. Bem</div>
+            <div class="legend-item" style="margin-left:5px;"><b>•</b> Registro no dia</div>
+        </div>
+
+        <button class="btn-main btn-secondary" style="margin-top:20px;" onclick="showScreen('home')">Voltar ao Início</button>
+    </div>
+
+    <div id="day-view" class="screen">
+        <h2 id="day-view-date">Data Selecionada</h2>
+        
+        <div class="card">
+            <label>Nível de Humor do Dia</label>
+            <select id="day-mood">
+                <option value="">Como você se sentiu no geral?</option>
+                <option value="5">🟢 5 - Muito Bem</option>
+                <option value="4">🟩 4 - Bem</option>
+                <option value="3">🟨 3 - Neutro</option>
+                <option value="2">🟧 2 - Mal</option>
+                <option value="1">🔴 1 - Muito Mal</option>
+            </select>
+
+            <label>Sentimentos presentes</label>
+            <div id="feelings-container" class="chip-container"></div>
+
+            <label>Diário do Dia</label>
+            <textarea id="day-desc" rows="4" placeholder="Como foi o seu dia? Acontecimentos importantes..."></textarea>
+            
+            <button class="btn-main btn-success" style="margin-top:10px;" onclick="saveDay()">Salvar Diário</button>
+        </div>
+
+        <h3 style="margin-top:20px; font-size:16px;">Modelos Cognitivos deste dia:</h3>
+        <div id="day-models-list"></div>
+
+        <button class="btn-main btn-secondary" style="margin-top:20px;" onclick="showScreen('calendar-screen'); renderCalendar();">Voltar ao Calendário</button>
     </div>
 
     <div id="form" class="screen">
-        <h2>Novo Registro</h2>
-        <label>Situação</label>
-        <textarea id="situacao" rows="3" placeholder="O que aconteceu?"></textarea>
-
-        <label>Pensamento Automático</label>
-        <textarea id="pensamento" rows="3" placeholder="O que passou pela sua cabeça?"></textarea>
-
-        <h3>Reações</h3>
-        <label>Física</label><input type="text" id="r_fisica" placeholder="Suor, aperto no peito...">
-        <label>Comportamental</label><input type="text" id="r_comportamental" placeholder="O que você fez?">
-        <label>Emocional</label><input type="text" id="r_emocional" placeholder="Medo, raiva, tristeza...">
-
-        <hr style="margin-top:20px; border: 0; border-top: 1px solid #ddd;">
+        <h2 id="form-title">Novo Modelo</h2>
         
-        <label>Crença Nuclear</label>
-        <input type="text" id="crenca" placeholder="Ex: Eu sou incapaz">
+        <label>Data e Hora do Registro</label>
+        <input type="datetime-local" id="data_registro" required>
 
-        <label>Pressupostos Adjacentes</label>
-        <input type="text" id="pressupostos" placeholder="Ex: Se eu errar, serei julgado">
+        <label>Situação</label><textarea id="situacao" rows="2"></textarea>
+        <label>Pensamento Automático</label><textarea id="pensamento" rows="2"></textarea>
+        
+        <h3>Reações</h3>
+        <label>Física</label><input type="text" id="r_fisica">
+        <label>Comportamental</label><input type="text" id="r_comportamental">
+        <label>Emocional</label><input type="text" id="r_emocional">
+        
+        <hr style="margin:20px 0; border-top:1px dashed #ccc;">
+        <h3 style="color: var(--warning);">Crenças Disfuncionais</h3>
+        <label>Intermediária</label><input type="text" id="pressupostos">
+        <label>Central</label><input type="text" id="crenca">
 
-        <button style="margin-top: 20px;" onclick="saveModel()">Salvar Modelo</button>
-        <button class="btn-secondary" onclick="showScreen('home')">Cancelar</button>
+        <button class="btn-main" style="margin-top: 20px;" onclick="saveModel()">Salvar Registro</button>
+        <button class="btn-main btn-secondary" onclick="cancelModelForm()">Cancelar</button>
     </div>
 
     <div id="history" class="screen">
-        <h2>Meus Modelos</h2>
+        <h2>Todos os Registros</h2>
         <div id="list-container"></div>
-        <button class="btn-secondary" onclick="showScreen('home')">Voltar ao Início</button>
+        <button class="btn-main btn-secondary" onclick="showScreen('home')">Voltar</button>
     </div>
 
     <div id="details" class="screen">
-        <h2>Detalhes do Modelo</h2>
+        <h2>Detalhes do Registro</h2>
         <div id="full-content"></div>
-        <button class="btn-secondary" onclick="showScreen('history')">Voltar ao Histórico</button>
-        <button id="delete-btn" class="btn-danger">Excluir este registro</button>
+        
+        <button id="edit-model-btn" class="btn-main" style="margin-top:20px;">✏️ Editar Registro</button>
+        <button class="btn-main btn-secondary" onclick="backToSource()">Voltar</button>
+        <button id="delete-model-btn" class="btn-main btn-emergency" style="margin-top:10px;">Excluir</button>
+    </div>
+
+    <div id="reformulations" class="screen">
+        <h2 style="color: var(--success);">Reformulações</h2>
+        <p style="text-align:center; font-size:14px; color:#666; margin-top: -10px; margin-bottom: 20px;">Suas visões alternativas e adaptativas.</p>
+        
+        <button class="btn-main btn-success" onclick="openReformulationForm()">+ Nova Reformulação</button>
+        <div id="reform-list-container"></div>
+        
+        <button class="btn-main btn-secondary" style="margin-top:20px;" onclick="showScreen('home')">Voltar</button>
+    </div>
+
+    <div id="reformulation-form" class="screen">
+        <h2 id="reform-form-title" style="color: var(--success);">Nova Reformulação</h2>
+        <input type="hidden" id="reform-id">
+
+        <label>Novo Pensamento Funcional</label>
+        <textarea id="ref_pensamento" rows="2" placeholder="Uma visão alternativa e mais equilibrada..."></textarea>
+        
+        <label>Nova Crença Intermediária</label>
+        <input type="text" id="ref_pressuposto" placeholder="Ex: Errar é humano e me ajuda a crescer">
+
+        <label>Nova Crença Central</label>
+        <input type="text" id="ref_crenca" placeholder="Ex: Eu sou capaz e merecedor">
+
+        <h3 style="margin-top: 25px; font-size: 16px;">Vincular a Registros Anteriores</h3>
+        <p style="font-size: 12px; color: #666; margin-top:-10px;">A quais situações esse novo modo de pensar se aplica?</p>
+        <div id="link-models-container" class="link-list">
+            </div>
+
+        <button class="btn-main btn-success" style="margin-top: 20px;" onclick="saveReformulation()">Salvar Reformulação</button>
+        <button class="btn-main btn-secondary" onclick="showScreen('reformulations')">Cancelar</button>
+    </div>
+
+    <div id="reformulation-details" class="screen">
+        <h2 style="color: var(--success);">Detalhes da Reformulação</h2>
+        <div id="reform-full-content"></div>
+        
+        <h3 style="font-size: 16px; margin-top: 20px;">Registros Vinculados:</h3>
+        <div id="reform-linked-models"></div>
+
+        <button id="edit-reform-btn" class="btn-main btn-success" style="margin-top:20px;">✏️ Editar Reformulação</button>
+        <button class="btn-main btn-secondary" onclick="showScreen('reformulations')">Voltar para Lista</button>
+        <button id="delete-reform-btn" class="btn-main btn-emergency" style="margin-top:10px;">Excluir</button>
+    </div>
+
+    <div id="emergency" class="screen">
+        <h2 style="color: var(--danger);">Plano de Emergência</h2>
+        <button class="btn-main btn-emergency" onclick="showEmergencyForm()">+ Adicionar Técnica</button>
+        <div id="emergency-list"></div>
+        <button class="btn-main btn-secondary" style="margin-top:20px;" onclick="showScreen('home')">Voltar</button>
+    </div>
+
+    <div id="emergency-form" class="screen">
+        <h2 id="emergency-title">Nova Técnica</h2>
+        <input type="hidden" id="emergency-id">
+        <label>Título</label><input type="text" id="em-title">
+        <label>Descrição</label><textarea id="em-desc" rows="6"></textarea>
+        <button class="btn-main btn-emergency" style="margin-top:20px;" onclick="saveEmergencyItem()">Salvar</button>
+        <button id="btn-delete-technique" class="btn-main btn-secondary" style="display:none;" onclick="deleteEmergencyItem()">Excluir</button>
+        <button class="btn-main btn-secondary" onclick="showScreen('emergency')">Cancelar</button>
     </div>
 
     <script>
-        let currentModels = [];
+        let viewSource = 'history'; 
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let selectedDateKey = null;
+        let currentEditModelIndex = null;
+        let currentSelectedFeelings = [];
+        const allFeelingsList = ['Alegria', 'Ansiedade', 'Tristeza', 'Raiva', 'Gratidão', 'Medo', 'Cansaço', 'Esperança', 'Frustração', 'Culpa', 'Calma', 'Tédio', 'Insegurança', 'Empolgação'];
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -86,77 +247,476 @@
             window.scrollTo(0,0);
         }
 
+        // --- CALENDÁRIO & DIÁRIO ---
+        const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+        function changeMonth(dir) {
+            currentMonth += dir;
+            if(currentMonth > 11) { currentMonth = 0; currentYear++; }
+            if(currentMonth < 0) { currentMonth = 11; currentYear--; }
+            renderCalendar();
+        }
+
+        function getMoodColor(level) {
+            switch(level) {
+                case '5': return '#81c784'; 
+                case '4': return '#c8e6c9'; 
+                case '3': return '#fff59d'; 
+                case '2': return '#ffcc80'; 
+                case '1': return '#ef9a9a'; 
+                default: return 'white';    
+            }
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            document.getElementById('month-year-label').innerText = `${monthNames[currentMonth]} ${currentYear}`;
+            grid.innerHTML = `
+                <div class="day-name">D</div><div class="day-name">S</div><div class="day-name">T</div>
+                <div class="day-name">Q</div><div class="day-name">Q</div><div class="day-name">S</div><div class="day-name">S</div>
+            `;
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            for(let i=0; i<firstDay; i++) { grid.innerHTML += `<div class="day-cell empty"></div>`; }
+
+            const journalData = JSON.parse(localStorage.getItem('cognitive_journal') || '{}');
+            const models = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
+
+            for(let d=1; d<=daysInMonth; d++) {
+                const dateKey = `${currentYear}-${String(currentMonth+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const displayDate = `${String(d).padStart(2, '0')}/${String(currentMonth+1).padStart(2, '0')}/${currentYear}`;
+                const moodLevel = journalData[dateKey] ? journalData[dateKey].mood : '';
+                const bgColor = getMoodColor(moodLevel);
+                let hasModel = models.some(m => m.date && m.date.substring(0, 10) === displayDate);
+                const modelIcon = hasModel ? `<span style="font-size: 16px; line-height: 0.5;">•</span>` : `<span style="font-size: 16px; line-height: 0.5; color: transparent;">•</span>`;
+                const isToday = new Date().toDateString() === new Date(currentYear, currentMonth, d).toDateString();
+                const todayClass = isToday ? 'today' : '';
+
+                grid.innerHTML += `
+                    <div class="day-cell ${todayClass}" style="background-color: ${bgColor};" onclick="openDay('${dateKey}', '${displayDate}')">
+                        <span style="margin-top: 5px;">${d}</span>
+                        ${modelIcon}
+                    </div>
+                `;
+            }
+        }
+
+        function renderFeelingsUI() {
+            const container = document.getElementById('feelings-container');
+            container.innerHTML = '';
+            allFeelingsList.forEach(feeling => {
+                const isActive = currentSelectedFeelings.includes(feeling);
+                container.innerHTML += `<div class="chip ${isActive ? 'active' : ''}" onclick="toggleFeeling('${feeling}')">${feeling}</div>`;
+            });
+        }
+
+        function toggleFeeling(feeling) {
+            if (currentSelectedFeelings.includes(feeling)) {
+                currentSelectedFeelings = currentSelectedFeelings.filter(item => item !== feeling);
+            } else {
+                currentSelectedFeelings.push(feeling);
+            }
+            renderFeelingsUI();
+        }
+
+        function openDay(dateKey, displayDate) {
+            selectedDateKey = dateKey;
+            document.getElementById('day-view-date').innerText = displayDate;
+            const journalData = JSON.parse(localStorage.getItem('cognitive_journal') || '{}');
+            const entry = journalData[dateKey] || { mood: '', desc: '', feelings: [] };
+            
+            document.getElementById('day-mood').value = entry.mood;
+            document.getElementById('day-desc').value = entry.desc;
+            currentSelectedFeelings = entry.feelings || [];
+            renderFeelingsUI();
+
+            const models = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
+            const dayModels = models.filter(m => m.date && m.date.substring(0, 10) === displayDate);
+            const modelsList = document.getElementById('day-models-list');
+            modelsList.innerHTML = '';
+            
+            if(dayModels.length === 0) {
+                modelsList.innerHTML = '<p style="font-size:14px; color:#999; text-align:center;">Nenhum registro cognitivo neste dia.</p>';
+            } else {
+                dayModels.forEach(item => {
+                    const originalIndex = models.findIndex(m => m.id === item.id);
+                    modelsList.innerHTML += `
+                        <div class="card card-model" onclick="viewDetails(${originalIndex}, 'calendar')">
+                            <p style="font-size:14px; margin:0;"><strong>Situação:</strong> ${item.situacao ? item.situacao.substring(0,40) : ''}...</p>
+                        </div>
+                    `;
+                });
+            }
+            showScreen('day-view');
+        }
+
+        function saveDay() {
+            const mood = document.getElementById('day-mood').value;
+            const desc = document.getElementById('day-desc').value;
+            const journalData = JSON.parse(localStorage.getItem('cognitive_journal') || '{}');
+            
+            if(mood === '' && desc === '' && currentSelectedFeelings.length === 0) {
+                delete journalData[selectedDateKey];
+            } else {
+                journalData[selectedDateKey] = { mood, desc, feelings: currentSelectedFeelings };
+            }
+            localStorage.setItem('cognitive_journal', JSON.stringify(journalData));
+            alert('Diário salvo com sucesso!');
+        }
+
+        // --- LÓGICAS DE MODELO (REGISTROS) ---
+        function openModelForm() {
+            currentEditModelIndex = null;
+            document.getElementById('form-title').innerText = 'Novo Modelo';
+            document.querySelectorAll('#form input[type="text"], #form textarea').forEach(i => i.value = '');
+            
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('data_registro').value = now.toISOString().slice(0, 16);
+            showScreen('form');
+        }
+
+        function editModel(index) {
+            currentEditModelIndex = index;
+            const history = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
+            const item = history[index];
+            document.getElementById('form-title').innerText = 'Editar Modelo';
+            
+            if (item.raw_date) {
+                document.getElementById('data_registro').value = item.raw_date;
+            } else if (item.date) {
+                try {
+                    const parts = item.date.split(' às ');
+                    const dateParts = parts[0].split('/'); 
+                    const timeStr = parts[1] || '00:00';
+                    document.getElementById('data_registro').value = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${timeStr}`;
+                } catch(e) {
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                    document.getElementById('data_registro').value = now.toISOString().slice(0, 16);
+                }
+            }
+            
+            document.getElementById('situacao').value = item.situacao || '';
+            document.getElementById('pensamento').value = item.pensamento || '';
+            document.getElementById('r_fisica').value = item.r_fisica || '';
+            document.getElementById('r_comportamental').value = item.r_comportamental || '';
+            document.getElementById('r_emocional').value = item.r_emocional || '';
+            document.getElementById('pressupostos').value = item.pressupostos || '';
+            document.getElementById('crenca').value = item.crenca || '';
+
+            showScreen('form');
+        }
+
+        function cancelModelForm() {
+            if (currentEditModelIndex !== null) showScreen('details');
+            else showScreen('home'); 
+            currentEditModelIndex = null;
+        }
+
         function saveModel() {
-            const model = {
-                id: Date.now(),
+            const rawDate = document.getElementById('data_registro').value;
+            let formattedDate = '';
+            
+            if (rawDate) {
+                const parts = rawDate.split('T');
+                if (parts.length === 2) {
+                    const dateParts = parts[0].split('-');
+                    formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]} às ${parts[1]}`;
+                }
+            } else {
+                formattedDate = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            }
+
+            const modelData = {
+                id: Date.now(), 
                 situacao: document.getElementById('situacao').value,
                 pensamento: document.getElementById('pensamento').value,
                 r_fisica: document.getElementById('r_fisica').value,
                 r_comportamental: document.getElementById('r_comportamental').value,
                 r_emocional: document.getElementById('r_emocional').value,
-                crenca: document.getElementById('crenca').value,
                 pressupostos: document.getElementById('pressupostos').value,
-                date: new Date().toLocaleDateString('pt-BR')
+                crenca: document.getElementById('crenca').value,
+                date: formattedDate,
+                raw_date: rawDate 
             };
 
+            if(!modelData.situacao && !modelData.pensamento) return alert("Preencha situação ou pensamento.");
+
             let history = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
-            history.push(model);
-            localStorage.setItem('cognitive_models', JSON.stringify(history));
             
-            alert('Modelo salvo com sucesso!');
-            showScreen('home');
-            document.querySelectorAll('input, textarea').forEach(i => i.value = '');
+            if (currentEditModelIndex !== null) {
+                modelData.id = history[currentEditModelIndex].id; 
+                history[currentEditModelIndex] = modelData;
+                alert('Registro atualizado com sucesso!');
+            } else {
+                history.push(modelData);
+                alert('Modelo salvo!');
+            }
+            localStorage.setItem('cognitive_models', JSON.stringify(history));
+            currentEditModelIndex = null; 
+            
+            if (viewSource === 'calendar' || viewSource === 'history') backToSource();
+            else showScreen('home');
         }
 
         function loadHistory() {
             const container = document.getElementById('list-container');
-            currentModels = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
-            
-            if (currentModels.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#999;">Nenhum registro ainda.</p>';
-                return;
-            }
-
-            container.innerHTML = '';
-            // Renderiza do mais novo para o mais antigo
-            currentModels.slice().reverse().forEach((item, index) => {
-                const actualIndex = currentModels.length - 1 - index;
+            const history = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
+            container.innerHTML = history.length ? '' : '<p style="text-align:center; color:#999;">Nenhum registro.</p>';
+            history.slice().reverse().forEach((item, index) => {
+                const realIndex = history.length - 1 - index;
                 container.innerHTML += `
-                    <div class="card" onclick="viewDetails(${actualIndex})">
-                        <h4>${item.date}</h4>
-                        <p><strong>Situação:</strong> ${item.situacao || '(Vazio)'}</p>
-                        <p><strong>Pensamento:</strong> ${item.pensamento || '(Vazio)'}</p>
-                    </div>
-                `;
+                    <div class="card card-model" onclick="viewDetails(${realIndex}, 'history')">
+                        <h4 style="margin:0; color:var(--primary)">${item.date}</h4>
+                        <p>${item.situacao ? item.situacao.substring(0,40) : ''}...</p>
+                    </div>`;
             });
         }
 
-        function viewDetails(index) {
-            const item = currentModels[index];
+        function viewDetails(index, source) {
+            viewSource = source; 
+            const history = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
+            const item = history[index];
             const content = document.getElementById('full-content');
             
             content.innerHTML = `
-                <div class="detail-item"><b>Data</b>${item.date}</div>
-                <div class="detail-item"><b>Situação</b>${item.situacao}</div>
-                <div class="detail-item"><b>Pensamento Automático</b>${item.pensamento}</div>
-                <div class="detail-item"><b>Reação Física</b>${item.r_fisica}</div>
-                <div class="detail-item"><b>Reação Comportamental</b>${item.r_comportamental}</div>
-                <div class="detail-item"><b>Reação Emocional</b>${item.r_emocional}</div>
-                <div class="detail-item" style="border-left: 4px solid gold;"><b>Crença Nuclear</b>${item.crenca}</div>
-                <div class="detail-item" style="border-left: 4px solid gold;"><b>Pressupostos Adjacentes</b>${item.pressupostos}</div>
+                <div class="detail-item"><b>Data e Hora</b>${item.date}</div>
+                <div class="detail-item"><b>Situação</b>${item.situacao || '-'}</div>
+                <div class="detail-item"><b>Pensamento Automático</b>${item.pensamento || '-'}</div>
+                <div class="detail-item"><b>Física</b>${item.r_fisica || '-'}</div>
+                <div class="detail-item"><b>Comportamental</b>${item.r_comportamental || '-'}</div>
+                <div class="detail-item"><b>Emocional</b>${item.r_emocional || '-'}</div>
+                <div class="detail-item" style="border-left:4px solid var(--warning)"><b>Crença Intermediária</b>${item.pressupostos || '-'}</div>
+                <div class="detail-item" style="border-left:4px solid var(--warning)"><b>Crença Central</b>${item.crenca || '-'}</div>
             `;
 
-            document.getElementById('delete-btn').onclick = () => deleteModel(index);
+            document.getElementById('edit-model-btn').onclick = () => { editModel(index); };
+            document.getElementById('delete-model-btn').onclick = () => {
+                if(confirm('Excluir este registro?')) {
+                    history.splice(index, 1);
+                    localStorage.setItem('cognitive_models', JSON.stringify(history));
+                    backToSource();
+                }
+            };
             showScreen('details');
         }
 
-        function deleteModel(index) {
-            if (confirm("Deseja realmente excluir este registro?")) {
-                currentModels.splice(index, 1);
-                localStorage.setItem('cognitive_models', JSON.stringify(currentModels));
-                showScreen('history');
-                loadHistory();
+        function backToSource() {
+            if (viewSource === 'calendar') {
+                showScreen('calendar-screen'); renderCalendar();
+            } else {
+                showScreen('history'); loadHistory();
             }
+        }
+
+        // --- MÓDULO: REFORMULAÇÕES FUNCIONAIS (NOVO) ---
+        let currentEditReformIndex = null;
+
+        function loadReformulations() {
+            const container = document.getElementById('reform-list-container');
+            const reforms = JSON.parse(localStorage.getItem('reformulations') || '[]');
+            
+            container.innerHTML = reforms.length ? '' : '<p style="text-align:center; color:#999;">Nenhuma reformulação criada ainda.</p>';
+            
+            reforms.slice().reverse().forEach((item, index) => {
+                const realIndex = reforms.length - 1 - index;
+                // Conta quantos registros estão vinculados
+                const linkedCount = item.linked_models ? item.linked_models.length : 0;
+                
+                container.innerHTML += `
+                    <div class="card card-reform" onclick="viewReformDetails(${realIndex})">
+                        <h4 style="margin:0; color:var(--success)">${item.ref_pensamento ? item.ref_pensamento.substring(0,30) : 'Sem pensamento'}...</h4>
+                        <p style="font-size:12px; color:#666; margin-top:5px;">${linkedCount} registro(s) vinculado(s)</p>
+                    </div>`;
+            });
+        }
+
+        function openReformulationForm(editIndex = null) {
+            currentEditReformIndex = editIndex;
+            const history = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
+            const linkContainer = document.getElementById('link-models-container');
+            
+            document.getElementById('reform-form-title').innerText = editIndex !== null ? 'Editar Reformulação' : 'Nova Reformulação';
+            
+            // Popula os checkboxes
+            linkContainer.innerHTML = '';
+            if (history.length === 0) {
+                linkContainer.innerHTML = '<p style="color:#999; font-size:13px; text-align:center;">Nenhum registro cognitivo disponível para vincular.</p>';
+            } else {
+                history.slice().reverse().forEach(model => {
+                    linkContainer.innerHTML += `
+                        <div class="link-item">
+                            <input type="checkbox" value="${model.id}" id="link-${model.id}" class="model-link-cb">
+                            <label for="link-${model.id}"><b>${model.date}</b> - ${model.situacao ? model.situacao.substring(0,40) : '(Sem situação)'}...</label>
+                        </div>
+                    `;
+                });
+            }
+
+            if (editIndex !== null) {
+                // Modo Edição
+                const reforms = JSON.parse(localStorage.getItem('reformulations') || '[]');
+                const item = reforms[editIndex];
+                
+                document.getElementById('ref_pensamento').value = item.ref_pensamento || '';
+                document.getElementById('ref_pressuposto').value = item.ref_pressuposto || '';
+                document.getElementById('ref_crenca').value = item.ref_crenca || '';
+                
+                // Marca os checkboxes já salvos
+                if (item.linked_models) {
+                    item.linked_models.forEach(id => {
+                        const cb = document.getElementById(`link-${id}`);
+                        if (cb) cb.checked = true;
+                    });
+                }
+            } else {
+                // Modo Novo
+                document.getElementById('ref_pensamento').value = '';
+                document.getElementById('ref_pressuposto').value = '';
+                document.getElementById('ref_crenca').value = '';
+            }
+
+            showScreen('reformulation-form');
+        }
+
+        function saveReformulation() {
+            const pensamento = document.getElementById('ref_pensamento').value;
+            if (!pensamento) return alert("Preencha pelo menos o Pensamento Funcional.");
+
+            // Coleta os IDs marcados
+            const linkedModels = [];
+            document.querySelectorAll('.model-link-cb:checked').forEach(cb => {
+                linkedModels.push(Number(cb.value));
+            });
+
+            const reformData = {
+                id: Date.now(),
+                ref_pensamento: pensamento,
+                ref_pressuposto: document.getElementById('ref_pressuposto').value,
+                ref_crenca: document.getElementById('ref_crenca').value,
+                linked_models: linkedModels
+            };
+
+            let reforms = JSON.parse(localStorage.getItem('reformulations') || '[]');
+            
+            if (currentEditReformIndex !== null) {
+                reformData.id = reforms[currentEditReformIndex].id; // Mantém ID original
+                reforms[currentEditReformIndex] = reformData;
+                alert('Reformulação atualizada!');
+            } else {
+                reforms.push(reformData);
+                alert('Reformulação salva!');
+            }
+
+            localStorage.setItem('reformulations', JSON.stringify(reforms));
+            currentEditReformIndex = null;
+            showScreen('reformulations');
+            loadReformulations();
+        }
+
+        function viewReformDetails(index) {
+            const reforms = JSON.parse(localStorage.getItem('reformulations') || '[]');
+            const item = reforms[index];
+            const content = document.getElementById('reform-full-content');
+            const linkedContainer = document.getElementById('reform-linked-models');
+            
+            content.innerHTML = `
+                <div class="detail-item detail-item-success"><b>Pensamento Funcional</b>${item.ref_pensamento || '-'}</div>
+                <div class="detail-item detail-item-success"><b>Crença Intermediária</b>${item.ref_pressuposto || '-'}</div>
+                <div class="detail-item detail-item-success"><b>Crença Central</b>${item.ref_crenca || '-'}</div>
+            `;
+
+            // Busca os modelos vinculados na base de dados original
+            const allModels = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
+            linkedContainer.innerHTML = '';
+            
+            if (!item.linked_models || item.linked_models.length === 0) {
+                linkedContainer.innerHTML = '<p style="color:#999; font-size:14px;">Nenhum registro vinculado a esta reformulação.</p>';
+            } else {
+                const linked = allModels.filter(m => item.linked_models.includes(m.id));
+                linked.forEach(model => {
+                    linkedContainer.innerHTML += `
+                        <div class="card card-model" style="padding: 10px; margin-bottom: 8px;">
+                            <p style="margin:0; font-size:13px;"><b>${model.date}</b><br>${model.situacao ? model.situacao.substring(0,50) : ''}...</p>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('edit-reform-btn').onclick = () => { openReformulationForm(index); };
+            document.getElementById('delete-reform-btn').onclick = () => {
+                if(confirm('Tem certeza que deseja excluir esta reformulação?')) {
+                    reforms.splice(index, 1);
+                    localStorage.setItem('reformulations', JSON.stringify(reforms));
+                    showScreen('reformulations');
+                    loadReformulations();
+                }
+            };
+            
+            showScreen('reformulation-details');
+        }
+
+        // --- PLANO DE EMERGÊNCIA ---
+        let emergencyList = [];
+        function loadEmergencyPlan() {
+            emergencyList = JSON.parse(localStorage.getItem('emergency_plan') || '[]');
+            renderEmergencyList();
+        }
+        function renderEmergencyList() {
+            const container = document.getElementById('emergency-list');
+            container.innerHTML = emergencyList.length ? '' : '<p style="text-align:center; color:#999;">Vazio.</p>';
+            emergencyList.forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="card card-emergency">
+                        <div onclick="showEmergencyForm(${index})">
+                            <h3 style="margin:0; color:var(--danger)">${item.title}</h3>
+                            <p style="white-space: pre-wrap;">${item.desc}</p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                            <button style="background: transparent; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px;" onclick="moveItem(${index}, -1)">▲</button>
+                            <button style="background: #95a5a6; color: white; border: none; padding: 5px 10px; border-radius: 4px;" onclick="showEmergencyForm(${index})">Editar</button>
+                            <button style="background: transparent; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px;" onclick="moveItem(${index}, 1)">▼</button>
+                        </div>
+                    </div>`;
+            });
+        }
+        function showEmergencyForm(index = null) {
+            showScreen('emergency-form');
+            const isEdit = index !== null;
+            document.getElementById('emergency-title').innerText = isEdit ? 'Editar' : 'Nova';
+            document.getElementById('emergency-id').value = isEdit ? index : '';
+            document.getElementById('em-title').value = isEdit ? emergencyList[index].title : '';
+            document.getElementById('em-desc').value = isEdit ? emergencyList[index].desc : '';
+            document.getElementById('btn-delete-technique').style.display = isEdit ? 'block' : 'none';
+        }
+        function saveEmergencyItem() {
+            const id = document.getElementById('emergency-id').value;
+            const title = document.getElementById('em-title').value;
+            const desc = document.getElementById('em-desc').value;
+            if(!title) return;
+            const newItem = { title, desc };
+            if (id === '') emergencyList.push(newItem);
+            else emergencyList[id] = newItem;
+            localStorage.setItem('emergency_plan', JSON.stringify(emergencyList));
+            showScreen('emergency'); renderEmergencyList();
+        }
+        function deleteEmergencyItem() {
+            const id = document.getElementById('emergency-id').value;
+            if(id !== '' && confirm('Excluir?')) {
+                emergencyList.splice(id, 1);
+                localStorage.setItem('emergency_plan', JSON.stringify(emergencyList));
+                showScreen('emergency'); renderEmergencyList();
+            }
+        }
+        function moveItem(index, dir) {
+            const newIndex = index + dir;
+            if (newIndex < 0 || newIndex >= emergencyList.length) return;
+            const item = emergencyList.splice(index, 1)[0];
+            emergencyList.splice(newIndex, 0, item);
+            localStorage.setItem('emergency_plan', JSON.stringify(emergencyList));
+            renderEmergencyList();
         }
     </script>
 </body>
