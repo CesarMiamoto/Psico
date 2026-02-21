@@ -29,7 +29,7 @@
         
         /* Inputs e Cards */
         label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; color: #555; }
-        input[type="text"], input[type="datetime-local"], textarea, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit; background: white; }
+        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit; background: white; }
         
         .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .card-model { border-left: 6px solid var(--primary); }
@@ -76,8 +76,8 @@
         
         <button class="btn-main" onclick="openModelForm()">📝 Novo Registro Cognitivo</button>
         <button class="btn-main btn-success" onclick="showScreen('reformulations'); loadReformulations();">🌱 Reformulações Funcionais</button>
-        <button class="btn-main btn-cal" onclick="showScreen('calendar-screen'); renderCalendar();">📅 Calendário & Diário</button>
-        <button class="btn-main btn-secondary" onclick="showScreen('history'); loadHistory();">📂 Ver Histórico</button>
+        <button class="btn-main btn-cal" onclick="showScreen('calendar-screen'); renderCalendar();">📅 Diário</button>
+        <button class="btn-main btn-secondary" onclick="showScreen('history'); loadHistory();">📂 Histórico</button>
         
         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
         <button class="btn-main btn-emergency" onclick="showScreen('emergency'); loadEmergencyPlan();">🚨 PLANO DE EMERGÊNCIA</button>
@@ -122,22 +122,22 @@
             <div id="feelings-container" class="chip-container"></div>
 
             <label>Diário do Dia</label>
-            <textarea id="day-desc" rows="4" placeholder="Como foi o seu dia? Acontecimentos importantes..."></textarea>
+            <textarea id="day-desc" rows="4" placeholder="Como foi o seu dia?"></textarea>
             
             <button class="btn-main btn-success" style="margin-top:10px;" onclick="saveDay()">Salvar Diário</button>
         </div>
 
-        <h3 style="margin-top:20px; font-size:16px;">Modelos Cognitivos deste dia:</h3>
+        <h3 style="margin-top:20px; font-size:16px;">Registros Cognitivos deste dia:</h3>
         <div id="day-models-list"></div>
 
         <button class="btn-main btn-secondary" style="margin-top:20px;" onclick="showScreen('calendar-screen'); renderCalendar();">Voltar ao Calendário</button>
     </div>
 
     <div id="form" class="screen">
-        <h2 id="form-title">Novo Modelo</h2>
+        <h2 id="form-title">Novo Registro</h2>
         
-        <label>Data e Hora do Registro</label>
-        <input type="datetime-local" id="data_registro" required>
+	<label>Data do Registro</label>
+	<input type="date" id="data_registro" required>
 
         <label>Situação</label><textarea id="situacao" rows="2"></textarea>
         <label>Pensamento Automático</label><textarea id="pensamento" rows="2"></textarea>
@@ -149,8 +149,8 @@
         
         <hr style="margin:20px 0; border-top:1px dashed #ccc;">
         <h3 style="color: var(--warning);">Crenças Disfuncionais</h3>
-        <label>Intermediária</label><input type="text" id="pressupostos">
-        <label>Central</label><input type="text" id="crenca">
+        <label>Crença Intermediária</label><input type="text" id="pressupostos">
+        <label>Crença Central</label><input type="text" id="crenca">
 
         <button class="btn-main" style="margin-top: 20px;" onclick="saveModel()">Salvar Registro</button>
         <button class="btn-main btn-secondary" onclick="cancelModelForm()">Cancelar</button>
@@ -166,16 +166,16 @@
         <h2>Detalhes do Registro</h2>
         <div id="full-content"></div>
         
-        <button id="edit-model-btn" class="btn-main" style="margin-top:20px;">✏️ Editar Registro</button>
+        <button id="edit-model-btn" class="btn-main" style="margin-top:20px;">Editar Registro</button>
         <button class="btn-main btn-secondary" onclick="backToSource()">Voltar</button>
         <button id="delete-model-btn" class="btn-main btn-emergency" style="margin-top:10px;">Excluir</button>
     </div>
 
     <div id="reformulations" class="screen">
-        <h2 style="color: var(--success);">Reformulações</h2>
+        <h2 style="color: var(--success);">Reformulações Funcionais</h2>
         <p style="text-align:center; font-size:14px; color:#666; margin-top: -10px; margin-bottom: 20px;">Suas visões alternativas e adaptativas.</p>
         
-        <button class="btn-main btn-success" onclick="openReformulationForm()">+ Nova Reformulação</button>
+        <button class="btn-main btn-success" onclick="openReformulationForm()">Nova Reformulação</button>
         <div id="reform-list-container"></div>
         
         <button class="btn-main btn-secondary" style="margin-top:20px;" onclick="showScreen('home')">Voltar</button>
@@ -186,13 +186,13 @@
         <input type="hidden" id="reform-id">
 
         <label>Novo Pensamento Funcional</label>
-        <textarea id="ref_pensamento" rows="2" placeholder="Uma visão alternativa e mais equilibrada..."></textarea>
+        <textarea id="ref_pensamento" rows="2" placeholder="Uma visão alternativa..."></textarea>
         
         <label>Nova Crença Intermediária</label>
-        <input type="text" id="ref_pressuposto" placeholder="Ex: Errar é humano e me ajuda a crescer">
+        <input type="text" id="ref_pressuposto" placeholder="Se.. Então...">
 
         <label>Nova Crença Central</label>
-        <input type="text" id="ref_crenca" placeholder="Ex: Eu sou capaz e merecedor">
+        <input type="text" id="ref_crenca" placeholder="Eu...">
 
         <h3 style="margin-top: 25px; font-size: 16px;">Vincular a Registros Anteriores</h3>
         <p style="font-size: 12px; color: #666; margin-top:-10px;">A quais situações esse novo modo de pensar se aplica?</p>
@@ -210,14 +210,14 @@
         <h3 style="font-size: 16px; margin-top: 20px;">Registros Vinculados:</h3>
         <div id="reform-linked-models"></div>
 
-        <button id="edit-reform-btn" class="btn-main btn-success" style="margin-top:20px;">✏️ Editar Reformulação</button>
+        <button id="edit-reform-btn" class="btn-main btn-success" style="margin-top:20px;">Editar Reformulação</button>
         <button class="btn-main btn-secondary" onclick="showScreen('reformulations')">Voltar para Lista</button>
         <button id="delete-reform-btn" class="btn-main btn-emergency" style="margin-top:10px;">Excluir</button>
     </div>
 
     <div id="emergency" class="screen">
         <h2 style="color: var(--danger);">Plano de Emergência</h2>
-        <button class="btn-main btn-emergency" onclick="showEmergencyForm()">+ Adicionar Técnica</button>
+        <button class="btn-main btn-emergency" onclick="showEmergencyForm()">Adicionar Técnica</button>
         <div id="emergency-list"></div>
         <button class="btn-main btn-secondary" style="margin-top:20px;" onclick="showScreen('home')">Voltar</button>
     </div>
@@ -241,13 +241,48 @@
         let currentSelectedFeelings = [];
         const allFeelingsList = ['Alegria', 'Ansiedade', 'Tristeza', 'Raiva', 'Gratidão', 'Medo', 'Cansaço', 'Esperança', 'Frustração', 'Culpa', 'Calma', 'Tédio', 'Insegurança', 'Empolgação'];
 
-        function showScreen(id) {
+        // --- SISTEMA DE NAVEGAÇÃO NATIVO (BOTÃO VOLTAR DO CELULAR) ---
+        
+        // 1. Ouve quando a URL (o hash) muda, seja clicando num botão ou usando o "Voltar" do celular
+        window.addEventListener('hashchange', handleRouting);
+        
+        // 2. Roda a verificação assim que o aplicativo é aberto
+        window.addEventListener('load', handleRouting);
+
+        function handleRouting() {
+            // Pega o que está escrito depois do '#' (ex: de '#form' pega só 'form')
+            let hash = window.location.hash.substring(1);
+            if (!hash) hash = 'home'; // Se não tiver nada, é a tela inicial
+
+            // Dispara carregamentos automáticos se você estiver voltando para uma tela de lista
+            if (hash === 'history') loadHistory();
+            if (hash === 'calendar-screen') renderCalendar();
+            if (hash === 'emergency') loadEmergencyPlan();
+            if (hash === 'reformulations') loadReformulations();
+
+            // Esconde todas as telas
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            
+            // Tenta achar a tela correspondente ao hash
+            const targetScreen = document.getElementById(hash);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            } else {
+                // Prevenção de erro: se a tela não existir, joga pro Início
+                document.getElementById('home').classList.add('active');
+                history.replaceState(null, null, '#home');
+            }
             window.scrollTo(0,0);
         }
 
-        // --- CALENDÁRIO & DIÁRIO ---
+        // 3. Modificamos a função original para apenas alterar a URL
+        function showScreen(id) {
+            window.location.hash = id;
+        }
+        
+        // -----------------------------------------------------------
+
+        // --- DIÁRIO ---
         const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
         function changeMonth(dir) {
@@ -367,36 +402,37 @@
 
         // --- LÓGICAS DE MODELO (REGISTROS) ---
         function openModelForm() {
-            currentEditModelIndex = null;
-            document.getElementById('form-title').innerText = 'Novo Modelo';
-            document.querySelectorAll('#form input[type="text"], #form textarea').forEach(i => i.value = '');
-            
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('data_registro').value = now.toISOString().slice(0, 16);
-            showScreen('form');
-        }
+	    currentEditModelIndex = null;
+	    document.getElementById('form-title').innerText = 'Novo Registro';
+    		document.querySelectorAll('#form input[type="text"], #form textarea').forEach(i => i.value = '');
+    
+    		const now = new Date();
+    		now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    		document.getElementById('data_registro').value = now.toISOString().slice(0, 10);
+    
+    		showScreen('form');
+	}
 
         function editModel(index) {
-            currentEditModelIndex = index;
-            const history = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
-            const item = history[index];
-            document.getElementById('form-title').innerText = 'Editar Modelo';
-            
-            if (item.raw_date) {
-                document.getElementById('data_registro').value = item.raw_date;
-            } else if (item.date) {
-                try {
-                    const parts = item.date.split(' às ');
-                    const dateParts = parts[0].split('/'); 
-                    const timeStr = parts[1] || '00:00';
-                    document.getElementById('data_registro').value = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${timeStr}`;
-                } catch(e) {
-                    const now = new Date();
-                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                    document.getElementById('data_registro').value = now.toISOString().slice(0, 16);
-                }
-            }
+    		currentEditModelIndex = index;
+    		const history = JSON.parse(localStorage.getItem('cognitive_models') || '[]');
+    		const item = history[index];
+    
+    		document.getElementById('form-title').innerText = 'Editar Modelo';
+    
+    		if (item.raw_date) {
+        		document.getElementById('data_registro').value = item.raw_date.substring(0, 10);
+    		} else if (item.date) {
+        	try {
+            		const parts = item.date.split(' às ');
+            		const dateParts = parts[0].split('/'); 
+            		document.getElementById('data_registro').value = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+        	} catch(e) {
+            		const now = new Date();
+            		now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            		document.getElementById('data_registro').value = now.toISOString().slice(0, 10);
+        	}
+    	}
             
             document.getElementById('situacao').value = item.situacao || '';
             document.getElementById('pensamento').value = item.pensamento || '';
@@ -415,19 +451,16 @@
             currentEditModelIndex = null;
         }
 
-        function saveModel() {
-            const rawDate = document.getElementById('data_registro').value;
-            let formattedDate = '';
-            
-            if (rawDate) {
-                const parts = rawDate.split('T');
-                if (parts.length === 2) {
-                    const dateParts = parts[0].split('-');
-                    formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]} às ${parts[1]}`;
-                }
-            } else {
-                formattedDate = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-            }
+	function saveModel() {
+	    const rawDate = document.getElementById('data_registro').value;
+	    let formattedDate = '';
+    
+	    if (rawDate) {
+	        const dateParts = rawDate.split('-');
+	        formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+    	    } else {
+        	formattedDate = new Date().toLocaleDateString('pt-BR');
+	    }
 
             const modelData = {
                 id: Date.now(), 
@@ -482,7 +515,7 @@
             const content = document.getElementById('full-content');
             
             content.innerHTML = `
-                <div class="detail-item"><b>Data e Hora</b>${item.date}</div>
+                <div class="detail-item"><b>Data</b>${item.date}</div>
                 <div class="detail-item"><b>Situação</b>${item.situacao || '-'}</div>
                 <div class="detail-item"><b>Pensamento Automático</b>${item.pensamento || '-'}</div>
                 <div class="detail-item"><b>Física</b>${item.r_fisica || '-'}</div>
@@ -672,7 +705,6 @@
                     <div class="card card-emergency">
                         <div onclick="showEmergencyForm(${index})">
                             <h3 style="margin:0; color:var(--danger)">${item.title}</h3>
-                            <p style="white-space: pre-wrap;">${item.desc}</p>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
                             <button style="background: transparent; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px;" onclick="moveItem(${index}, -1)">▲</button>
